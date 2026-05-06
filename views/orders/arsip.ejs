@@ -11,8 +11,7 @@
   <div class="container mt-4">
     <div class="d-flex justify-content-between mb-3">
       <h4>orders</h4>
-      <a href="/orders/create" class="btn btn-primary">+ Tambah Menu</a>
-      <a href="/orders/arsip" class="btn btn-primary"> Lihat Arsip </a>
+      <a href="/orders" class="btn btn-primary"> Kembali ke Orders </a>
     </div>
 
     <table class="table table-bordered">
@@ -55,8 +54,8 @@
           </form>
 
           <!-- Soft delete -->
-          <form action="/orders/soft-delete/<%= order.orders_id %>" method="POST" style="display:inline">
-            <button class="btn btn-secondary btn-sm">Arsip</button>
+          <form action="/orders/recover-delete/<%= order.orders_id %>" method="POST" style="display:inline">
+            <button class="btn btn-secondary btn-sm">Pulihkan</button>
           </form>
 
           <!-- Hard delete -->

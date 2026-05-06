@@ -16,5 +16,9 @@ router.post('/update-status/:id', isAdmin, orderController.updateStatus);
 // -- DELETE --
 router.post('/soft-delete/:id', isAdmin, orderController.softDelete);
 router.post('/hard-delete/:id', isAdmin, orderController.hardDelete);
+router.post('/recover-delete/:id', isAdmin, orderController.recoverDelete);
+
+//-- ARSIP --
+router.get('/arsip', isAdmin, orderController.showArsip);
 
 module.exports = router;

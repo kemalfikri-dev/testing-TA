@@ -14,8 +14,13 @@ router.post('/create', isAdmin, menuController.create);
 router.get('/edit/:id', isAdmin, menuController.showEdit);
 router.post('/edit/:id', isAdmin, menuController.edit);
 
-// -- DELETE --
+// -- DELETE dan RECOVERY--
 router.post('/soft-delete/:id', isAdmin, menuController.softDelete);
 router.post('/hard-delete/:id', isAdmin, menuController.hardDelete);
+router.post('/recover-delete/:id', isAdmin, menuController.recoverDelete);
+
+
+//--ARSIP--
+router.get('/arsip', isAdmin, menuController.showArsip);
 
 module.exports = router;

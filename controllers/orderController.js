@@ -99,11 +99,40 @@ exports.softDelete = async (req, res) => {
   }
 };
 
+exports.showArsip = async (req, res) => {
+  try {
+    const[orders] = await db.query (`
+      SELECT o.orders_id, u.name, m.menu_name, od.quantity, od.subtotal, o.status, o.date
+      FROM orders o
+      JOIN users u ON o.users_id = u.users_id
+      JOIN order_details od ON o.orders_id = od.orders_id
+      JOIN menus m ON od.menus_id = m.menus_id
+      WHERE o.deleted_at is NOT NULL
+      `);
+      res.render('orders/arsip.ejs', { orders });
+  } catch (err){
+    console.log(err);
+    res.redirect('/orders')
+  }
+};
+
+exports.recoverDelete = async (req, res) => {
+  try{
+    await db.query (
+      'UPDATE orders SET deleted_at = NULL WHERE orders_id = ?', 
+      [req.params.id]
+    );
+    res.redirect('/orders/arsip');
+  }
+  catch(err){
+    console.log(err)
+    res.redirect('/orders/arsip')
+  }
+};
+
 // ── DELETE ──
 exports.hardDelete = async (req, res) => {
   try {
-    // query DELETE berdasarkan req.params.id
-    // redirect ke /categories
     await db.query(
       'DELETE FROM order_details WHERE orders_id = ?',
       [req.params.id]

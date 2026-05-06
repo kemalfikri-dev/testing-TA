@@ -103,6 +103,34 @@ exports.softDelete = async (req, res) => {
   }
 };
 
+exports.showArsip = async (req, res) => {
+  try {
+    const[menus] = await db.query (`
+     SELECT m.*, c.categories_name 
+      FROM menus m
+      JOIN categories c ON m.categories_id = c.categories_id
+      WHERE m.deleted_at IS NOT NULL`);
+      res.render('menus/arsip.ejs', { menus});
+  } catch(err) {
+    console.log(err);
+    res.redirect('/menus')
+  }
+};
+
+exports.recoverDelete = async (req, res) => {
+  try{
+    await db.query (
+      'UPDATE menus SET deleted_at = NULL WHERE menus_id = ?', 
+      [req.params.id]
+    );
+    res.redirect('/menus/arsip');
+  }
+  catch(err){
+    console.log(err)
+    res.redirect('/menus/arsip')
+  }
+}
+
 // ── DELETE ──
 exports.hardDelete = async (req, res) => {
   try {

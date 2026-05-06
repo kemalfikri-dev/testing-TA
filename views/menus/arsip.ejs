@@ -13,18 +13,9 @@
       <h4>Menus</h4>
       <% if (user && user.role === 'admin') { %>
       <a href="/menus/create" class="btn btn-primary">+ Tambah Menu</a>
-      <a href="/menus/arsip" class="btn btn-secondary"> Cek Arsip</a>
+      <a href="/menus" class="btn btn-secondary"> Kembali Ke Menu</a>
       <% } %>
     </div>
-
-    <!-- Search -->
-    <form action="/menus" method="GET" class="mb-3">
-      <div class="input-group">
-        <input type="text" name="search" class="form-control" 
-               placeholder="Cari menu..." value="<%= search %>">
-        <button class="btn btn-outline-secondary">Cari</button>
-      </div>
-    </form>
 
     <table class="table table-bordered">
       <thead>
@@ -50,8 +41,9 @@
           <% if (user && user.role === 'admin') { %>
           <td>
             <a href="/menus/edit/<%= menu.menus_id %>" class="btn btn-warning btn-sm">Edit</a>
-            <form action="/menus/soft-delete/<%= menu.menus_id %>" method="POST" style="display:inline">
-              <button class="btn btn-secondary btn-sm">Arsip</button>
+            </form>
+            <form action="/menus/recover-delete/<%= menu.menus_id %>" method="POST" style="display:inline">
+              <button class="btn btn-secondary btn-sm">Pulihkan</button>
             </form>
             <form action="/menus/hard-delete/<%= menu.menus_id %>" method="POST" style="display:inline">
               <button class="btn btn-danger btn-sm">Hapus</button>
