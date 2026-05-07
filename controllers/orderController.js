@@ -20,6 +20,24 @@ exports.index = async (req, res) => {
   }
 };
 
+// ── SHOW ARCHIVE ──
+exports.archive = async (req, res) => {
+  try {
+    const[orders] = await db.query (`
+      SELECT o.orders_id, u.name, m.menu_name, od.quantity, od.subtotal, o.status, o.date
+      FROM orders o
+      JOIN users u ON o.users_id = u.users_id
+      JOIN order_details od ON o.orders_id = od.orders_id
+      JOIN menus m ON od.menus_id = m.menus_id
+      WHERE o.deleted_at IS NOT NULL 
+      `);
+      res.render('orders/archive', { orders });
+  } catch (err){
+    console.log(err);
+    res.redirect('/orders')
+  }
+};
+
 // ── SHOW FORM CREATE ──
 exports.showCreate = async (req, res) => {
   try {
@@ -35,6 +53,11 @@ exports.showCreate = async (req, res) => {
 exports.create = async (req, res) => {
    try {
     const { menus_id, quantity } = req.body;
+
+    if (quantity < 1) {
+      const [menus] = await db.query('SELECT * FROM menus');
+      return res.render('orders/create', { error: 'Quantity tidak boleh kurang dari 1', menus });
+    }
 
     // 1. Ambil harga menu dulu
     const [menu] = await db.query('SELECT * FROM menus WHERE menus_id = ?', [menus_id]);
@@ -96,6 +119,20 @@ exports.softDelete = async (req, res) => {
     // redirect ke /categories
     console.log(err);
     res.redirect('/orders')
+  }
+};
+
+// -- RESTORE --
+exports.restore = async (req, res) => {
+  try {
+    await db.query(
+      'UPDATE orders SET deleted_at = NULL WHERE orders_id = ?', 
+      [req.params.id]
+    );
+    res.redirect('/orders/archive')
+  } catch (err) {
+    console.log(err);
+    res.redirect('/orders/archive')
   }
 };
 

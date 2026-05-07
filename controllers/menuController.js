@@ -5,15 +5,15 @@ exports.index = async (req, res) => {
   try {
     const search = req.query.search || '';
 
-    const[menus] = await db.query (`
+    const [menus] = await db.query(`
       SELECT m.*, c.categories_name 
       FROM menus m
       JOIN categories c ON m.categories_id = c.categories_id
       WHERE m.deleted_at IS NULL
       AND m.menu_name LIKE ?`
       , [`%${search}%`]);
-      res.render('menus/index', { menus, search });
-  } catch (err){
+    res.render('menus/index', { menus, search });
+  } catch (err) {
     console.log(err);
     res.redirect('/')
   }
@@ -37,15 +37,21 @@ exports.create = async (req, res) => {
     // query INSERT ke tabel categories
     // redirect ke /categories
     const { menu_name, price, description, categories_id } = req.body;
+
+    if (price < 0) {
+      const [categories] = await db.query('SELECT * FROM categories');
+      return res.render('menus/create', { error: 'Harga tidak boleh negatif', categories });
+    }
+
     await db.query(
-      'INSERT INTO menus (menu_name, price, description, categories_id) VALUES (?, ?, ?, ?)', 
+      'INSERT INTO menus (menu_name, price, description, categories_id) VALUES (?, ?, ?, ?)',
       [menu_name, price, description, categories_id]
     );
     res.redirect('/menus');
   } catch (err) {
     // render balik ke create, kirim pesan error
     console.log(err);
-    res.render('menus/create', {error: 'Gagal tambahkan kategori'});
+    res.render('menus/create', { error: 'Gagal tambahkan kategori' });
   }
 };
 
@@ -59,7 +65,6 @@ exports.showEdit = async (req, res) => {
     );
     const [categories] = await db.query('SELECT * FROM categories'); // ← tambah ini
     res.render('menus/edit', { menu: menus[0], categories, error: null });
-    res.render('menus/edit', {menu: menus[0], error: null});
   } catch (err) {
     // redirect ke /categories
     console.log(err);
@@ -74,8 +79,15 @@ exports.edit = async (req, res) => {
     // query UPDATE categories berdasarkan req.params.id
     // redirect ke /categories
     const { menu_name, price, description, categories_id } = req.body;
+
+    if (price < 0) {
+      const [menus] = await db.query('SELECT * FROM menus WHERE menus_id = ?', [req.params.id]);
+      const [categories] = await db.query('SELECT * FROM categories');
+      return res.render('menus/edit', { menu: menus[0], categories, error: 'Harga tidak boleh negatif' });
+    }
+
     await db.query(
-      'UPDATE menus SET menu_name = ?, price = ?, description = ?, categories_id = ? WHERE menus_id = ?', 
+      'UPDATE menus SET menu_name = ?, price = ?, description = ?, categories_id = ? WHERE menus_id = ?',
       [menu_name, price, description, categories_id, req.params.id]
     );
     res.redirect('/menus')
@@ -92,7 +104,7 @@ exports.softDelete = async (req, res) => {
     // query DELETE berdasarkan req.params.id
     // redirect ke /categories
     await db.query(
-      'UPDATE menus SET deleted_at = NOW() WHERE menus_id = ?', 
+      'UPDATE menus SET deleted_at = NOW() WHERE menus_id = ?',
       [req.params.id]
     );
     res.redirect('/menus')
@@ -109,7 +121,7 @@ exports.hardDelete = async (req, res) => {
     // query DELETE berdasarkan req.params.id
     // redirect ke /categories
     await db.query(
-      'DELETE FROM menus WHERE menus_id = ?', 
+      'DELETE FROM menus WHERE menus_id = ?',
       [req.params.id]
     );
     res.redirect('/menus')

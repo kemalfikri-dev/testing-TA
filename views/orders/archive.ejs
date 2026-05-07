@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Orders - Pesen.In</title>
+  <title>Arsip Orders - Pesen.In</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
 </head>
@@ -11,13 +11,8 @@
 
   <div class="container my-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="page-title mb-0">Orders</h2>
-      <div>
-        <% if (user && user.role === 'admin') { %>
-          <a href="/orders/archive" class="btn btn-secondary rounded-pill px-4 shadow-sm me-2">Lihat Arsip</a>
-        <% } %>
-        <a href="/orders/create" class="btn btn-primary rounded-pill px-4 shadow-sm">+ Buat Pesanan</a>
-      </div>
+      <h2 class="page-title mb-0">Arsip Orders</h2>
+      <a href="/orders" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">Kembali ke Orders</a>
     </div>
 
     <div class="table-glass-container shadow-sm">
@@ -60,26 +55,14 @@
               <% if (user && user.role === 'admin') { %>     
               <td class="text-center">
                 <div class="d-flex flex-wrap justify-content-center gap-1">
-                  <!-- Update status -->
-                  <form action="/orders/update-status/<%= order.orders_id %>" method="POST" class="d-flex gap-1 m-0">
-                    <select name="status" class="form-select form-select-sm border-0 bg-light rounded-pill px-3" style="width: auto; font-size: 0.8rem;">
-                      <option value="pending" <%= order.status === 'pending' ? 'selected' : '' %>>Pending</option>
-                      <option value="paid" <%= order.status === 'paid' ? 'selected' : '' %>>Paid</option>
-                      <option value="preparing" <%= order.status === 'preparing' ? 'selected' : '' %>>Preparing</option>
-                      <option value="ready" <%= order.status === 'ready' ? 'selected' : '' %>>Ready</option>
-                      <option value="cancel" <%= order.status === 'cancel' ? 'selected' : '' %>>Cancel</option>
-                    </select>
-                    <button class="btn btn-primary btn-sm btn-sm-custom">Update</button>
-                  </form>
-
-                  <!-- Soft delete -->
-                  <form action="/orders/soft-delete/<%= order.orders_id %>" method="POST" class="m-0">
-                    <button class="btn btn-secondary btn-sm btn-sm-custom">Arsip</button>
+                  <!-- Restore -->
+                  <form action="/orders/restore/<%= order.orders_id %>" method="POST" class="m-0">
+                    <button class="btn btn-success btn-sm btn-sm-custom">Kembalikan</button>
                   </form>
 
                   <!-- Hard delete -->
                   <form action="/orders/hard-delete/<%= order.orders_id %>" method="POST" class="m-0">
-                    <button class="btn btn-danger btn-sm btn-sm-custom">Hapus</button>
+                    <button class="btn btn-danger btn-sm btn-sm-custom">Hapus Permanen</button>
                   </form>
                 </div>
               </td>
@@ -88,7 +71,7 @@
             <% }) %>
             <% if (orders.length === 0) { %>
             <tr>
-              <td colspan="8" class="text-center text-muted py-4">Belum ada pesanan.</td>
+              <td colspan="8" class="text-center text-muted py-4">Belum ada pesanan yang diarsipkan.</td>
             </tr>
             <% } %>
           </tbody>
