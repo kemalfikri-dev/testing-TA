@@ -4,7 +4,7 @@ const menuController = require('../controllers/menuController');
 const { isLogin, isAdmin } = require('../middleware/authMiddleware');
 
 // -- INDEX -- 
-router.get('/', isLogin, menuController.index);
+router.get('/', isAdmin, menuController.index);
 
 // -- ARCHIVE --
 router.get('/archive', isAdmin, menuController.archive);

@@ -4,6 +4,7 @@ const db = require('../config/db');
 exports.index = async (req, res) => {
   try {
     const search = req.query.search || '';
+    const userId = req.session.user.users_id;
 
     const[orders] = await db.query (`
       SELECT o.orders_id, u.name, m.menu_name, od.quantity, od.subtotal, o.status, o.date
@@ -12,7 +13,8 @@ exports.index = async (req, res) => {
       JOIN order_details od ON o.orders_id = od.orders_id
       JOIN menus m ON od.menus_id = m.menus_id
       WHERE o.deleted_at is NULL 
-      `);
+      AND o.users_id = ?
+      `[users_id]);
       res.render('orders/index', { orders });
   } catch (err){
     console.log(err);
@@ -89,9 +91,6 @@ exports.create = async (req, res) => {
 // ── PROCESS EDIT ──
 exports.updateStatus = async (req, res) => {
   try {
-    // destructuring categories_name dari req.body
-    // query UPDATE categories berdasarkan req.params.id
-    // redirect ke /categories
     const { status } = req.body;
     await db.query(
       'UPDATE orders SET status = ?  WHERE orders_id = ?', 
@@ -99,7 +98,6 @@ exports.updateStatus = async (req, res) => {
     );
     res.redirect('/orders')
   } catch (err) {
-    // redirect ke /categories
     console.log(err);
     res.redirect('/orders')
   }
@@ -108,15 +106,12 @@ exports.updateStatus = async (req, res) => {
 // -- SOFT DELETE --
 exports.softDelete = async (req, res) => {
   try {
-    // query DELETE berdasarkan req.params.id
-    // redirect ke /categories
     await db.query(
       'UPDATE orders SET deleted_at = NOW() WHERE orders_id = ?', 
       [req.params.id]
     );
     res.redirect('/orders')
   } catch (err) {
-    // redirect ke /categories
     console.log(err);
     res.redirect('/orders')
   }
@@ -143,15 +138,12 @@ exports.hardDelete = async (req, res) => {
       'DELETE FROM order_details WHERE orders_id = ?',
       [req.params.id]
     );
-
-    // 2. Baru hapus orders
     await db.query(
       'DELETE FROM orders WHERE orders_id = ?',
       [req.params.id]
     );
     res.redirect('/orders')
   } catch (err) {
-    // redirect ke /categories
     console.log(err);
     res.redirect('/orders')
   }

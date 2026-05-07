@@ -52,9 +52,6 @@ exports.showCreate = async (req, res) => {
 // ── PROCESS CREATE ──
 exports.create = async (req, res) => {
   try {
-    // destructuring categories_name dari req.body
-    // query INSERT ke tabel categories
-    // redirect ke /categories
     const { menu_name, price, description, categories_id } = req.body;
 
     if (price < 0) {
@@ -77,8 +74,6 @@ exports.create = async (req, res) => {
 // ── SHOW FORM EDIT ──
 exports.showEdit = async (req, res) => {
   try {
-    // query SELECT kategori berdasarkan req.params.id
-    // render ke views/categories/edit.ejs, kirim category dan error: null
     const [menus] = await db.query(
       'SELECT * FROM menus WHERE menus_id = ?', [req.params.id]
     );
@@ -94,9 +89,6 @@ exports.showEdit = async (req, res) => {
 // ── PROCESS EDIT ──
 exports.edit = async (req, res) => {
   try {
-    // destructuring categories_name dari req.body
-    // query UPDATE categories berdasarkan req.params.id
-    // redirect ke /categories
     const { menu_name, price, description, categories_id } = req.body;
 
     if (price < 0) {
@@ -111,7 +103,6 @@ exports.edit = async (req, res) => {
     );
     res.redirect('/menus')
   } catch (err) {
-    // redirect ke /categories
     console.log(err);
     res.redirect('/menus')
   }
@@ -120,15 +111,12 @@ exports.edit = async (req, res) => {
 // -- SOFT DELETE --
 exports.softDelete = async (req, res) => {
   try {
-    // query DELETE berdasarkan req.params.id
-    // redirect ke /categories
     await db.query(
       'UPDATE menus SET deleted_at = NOW() WHERE menus_id = ?',
       [req.params.id]
     );
     res.redirect('/menus')
   } catch (err) {
-    // redirect ke /categories
     console.log(err);
     res.redirect('/menus')
   }
@@ -150,7 +138,6 @@ exports.restore = async (req, res) => {
 // ── DELETE ──
 exports.hardDelete = async (req, res) => {
   try {
-    // Hapus relasi di order_details terlebih dahulu
     await db.query(
       'DELETE FROM order_details WHERE menus_id = ?',
       [req.params.id]
