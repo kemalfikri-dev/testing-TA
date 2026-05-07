@@ -4,7 +4,7 @@ const categoryController = require('../controllers/categoryController');
 const { isLogin, isAdmin } = require('../middleware/authMiddleware');
 
 // -- INDEX -- 
-router.get('/', isLogin, categoryController.index);
+router.get('/', isAdmin, categoryController.index);
 
 // -- CREATE -- 
 router.get('/create', isAdmin, categoryController.showCreate);

@@ -19,6 +19,25 @@ exports.index = async (req, res) => {
   }
 };
 
+// ── SHOW ARCHIVE ──
+exports.archive = async (req, res) => {
+  try {
+    const search = req.query.search || '';
+
+    const [menus] = await db.query(`
+      SELECT m.*, c.categories_name 
+      FROM menus m
+      JOIN categories c ON m.categories_id = c.categories_id
+      WHERE m.deleted_at IS NOT NULL
+      AND m.menu_name LIKE ?`
+      , [`%${search}%`]);
+    res.render('menus/archive', { menus, search });
+  } catch (err) {
+    console.log(err);
+    res.redirect('/menus')
+  }
+};
+
 // ── SHOW FORM CREATE ──
 exports.showCreate = async (req, res) => {
   try {
@@ -115,19 +134,37 @@ exports.softDelete = async (req, res) => {
   }
 };
 
+// -- RESTORE --
+exports.restore = async (req, res) => {
+  try {
+    await db.query(
+      'UPDATE menus SET deleted_at = NULL WHERE menus_id = ?',
+      [req.params.id]
+    );
+    res.redirect('/menus/archive')
+  } catch (err) {
+    console.log(err);
+    res.redirect('/menus/archive')
+  }
+};
+
 // ── DELETE ──
 exports.hardDelete = async (req, res) => {
   try {
-    // query DELETE berdasarkan req.params.id
-    // redirect ke /categories
+    // Hapus relasi di order_details terlebih dahulu
+    await db.query(
+      'DELETE FROM order_details WHERE menus_id = ?',
+      [req.params.id]
+    );
+    
+    // Baru hapus menu
     await db.query(
       'DELETE FROM menus WHERE menus_id = ?',
       [req.params.id]
     );
-    res.redirect('/menus')
+    res.redirect('/menus/archive')
   } catch (err) {
-    // redirect ke /categories
     console.log(err);
-    res.redirect('/menus')
+    res.redirect('/menus/archive')
   }
 };

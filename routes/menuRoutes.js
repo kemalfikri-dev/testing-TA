@@ -6,6 +6,9 @@ const { isLogin, isAdmin } = require('../middleware/authMiddleware');
 // -- INDEX -- 
 router.get('/', isLogin, menuController.index);
 
+// -- ARCHIVE --
+router.get('/archive', isAdmin, menuController.archive);
+
 // -- CREATE -- 
 router.get('/create', isAdmin, menuController.showCreate);
 router.post('/create', isAdmin, menuController.create);
@@ -14,8 +17,9 @@ router.post('/create', isAdmin, menuController.create);
 router.get('/edit/:id', isAdmin, menuController.showEdit);
 router.post('/edit/:id', isAdmin, menuController.edit);
 
-// -- DELETE --
+// -- DELETE & RESTORE --
 router.post('/soft-delete/:id', isAdmin, menuController.softDelete);
+router.post('/restore/:id', isAdmin, menuController.restore);
 router.post('/hard-delete/:id', isAdmin, menuController.hardDelete);
 
 module.exports = router;
