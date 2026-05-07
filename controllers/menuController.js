@@ -59,7 +59,6 @@ exports.showEdit = async (req, res) => {
     );
     const [categories] = await db.query('SELECT * FROM categories'); // ← tambah ini
     res.render('menus/edit', { menu: menus[0], categories, error: null });
-    res.render('menus/edit', {menu: menus[0], error: null});
   } catch (err) {
     // redirect ke /categories
     console.log(err);
